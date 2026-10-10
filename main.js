@@ -31,7 +31,7 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
 revealEls.forEach((el) => observer.observe(el));
 
-/* Testimonial carousel */
+/* Production carousel */
 const track = document.getElementById('carousel');
 const dotsEl = document.getElementById('dots');
 const buttons = document.querySelectorAll('.ctrl');
