@@ -50,3 +50,39 @@ if (marquee) {
   window.addEventListener('resize', setSpeed);
   window.addEventListener('load', setSpeed);
 }
+
+/* Instagram links: on phones, open the Instagram app instead of the mobile
+   website (which asks visitors to log in). Desktop keeps the normal link.
+   - Inside Instagram's own in-app browser, ig.me already opens the DM: leave it.
+   - Android: an intent URL opens the app, or the Play Store if it's missing.
+   - iOS: try the app's URL scheme; if the page is still showing shortly after,
+     the app isn't installed, so send the visitor to the App Store. */
+const IG_USERNAME = 'casimirdz';
+const IG_APP_URL = `instagram://user?username=${IG_USERNAME}`;
+const IG_APP_STORE = 'https://apps.apple.com/app/instagram/id389801252';
+const IG_ANDROID_INTENT = `intent://user?username=${IG_USERNAME}#Intent;scheme=instagram;package=com.instagram.android;end`;
+
+const ua = navigator.userAgent;
+const inInstagramApp = /Instagram/i.test(ua);
+const isAndroid = /Android/i.test(ua);
+const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+if (!inInstagramApp && (isAndroid || isIOS)) {
+  document.querySelectorAll('a[data-ig]').forEach((link) => {
+    link.removeAttribute('target');
+    if (isAndroid) {
+      link.href = IG_ANDROID_INTENT;
+      return;
+    }
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      let fallback = window.setTimeout(() => {
+        if (document.visibilityState === 'visible') window.location.href = IG_APP_STORE;
+      }, 1600);
+      const cancel = () => { window.clearTimeout(fallback); fallback = null; };
+      document.addEventListener('visibilitychange', () => { if (document.hidden) cancel(); }, { once: true });
+      window.addEventListener('pagehide', cancel, { once: true });
+      window.location.href = IG_APP_URL;
+    });
+  });
+}
