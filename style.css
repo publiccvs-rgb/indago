@@ -494,14 +494,14 @@ p { text-wrap: pretty; }
 
 .slide {
   flex: 0 0 auto;
-  width: clamp(240px, 24vw, 340px);
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--card);
 }
 
-.slide img { display: block; width: 100%; height: auto; }
+/* Fixed height, natural width: screenshots of any shape show uncropped */
+.slide img { display: block; height: clamp(190px, 20vw, 280px); width: auto; }
 
 .slide-empty {
   aspect-ratio: 4 / 5;
