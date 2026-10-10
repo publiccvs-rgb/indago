@@ -31,38 +31,22 @@ const observer = new IntersectionObserver((entries) => {
 }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
 revealEls.forEach((el) => observer.observe(el));
 
-/* Production carousel */
-const track = document.getElementById('carousel');
-const dotsEl = document.getElementById('dots');
-const buttons = document.querySelectorAll('.ctrl');
-if (track) {
-  const slides = Array.from(track.children);
-  const dots = slides.map(() => dotsEl.appendChild(document.createElement('span')));
-
-  const step = () => slides[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 16);
-
-  function update() {
-    const index = Math.round(track.scrollLeft / step());
-    dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
-    const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
-    buttons[0].disabled = track.scrollLeft <= 4;
-    buttons[1].disabled = atEnd;
-  }
-
-  buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      track.scrollBy({ left: Number(btn.dataset.dir) * step(), behavior: 'smooth' });
-    });
+/* Production marquee: duplicate the slides so the strip loops seamlessly,
+   and keep the speed constant however many screenshots there are */
+const marquee = document.getElementById('marquee');
+if (marquee) {
+  const originals = Array.from(marquee.children);
+  originals.forEach((slide) => {
+    const copy = slide.cloneNode(true);
+    copy.setAttribute('aria-hidden', 'true');
+    marquee.appendChild(copy);
   });
-
-  track.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-      e.preventDefault();
-      track.scrollBy({ left: (e.key === 'ArrowRight' ? 1 : -1) * step(), behavior: 'smooth' });
-    }
-  });
-
-  track.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+  const PIXELS_PER_SECOND = 40;
+  const setSpeed = () => {
+    const distance = marquee.scrollWidth / 2;
+    marquee.style.setProperty('--marquee-duration', `${distance / PIXELS_PER_SECOND}s`);
+  };
+  setSpeed();
+  window.addEventListener('resize', setSpeed);
+  window.addEventListener('load', setSpeed);
 }

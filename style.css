@@ -126,7 +126,7 @@ img { max-width: 100%; }
   -webkit-backdrop-filter: blur(14px);
 }
 
-.nav-logo img { display: block; height: 26px; width: auto; }
+.nav-logo img { display: block; height: 30px; width: auto; }
 
 .nav-links {
   display: flex;
@@ -168,7 +168,7 @@ img { max-width: 100%; }
 .ig { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; flex-shrink: 0; }
 .ig .fill { fill: currentColor; stroke: none; }
 
-.btn:focus-visible, .ctrl:focus-visible, .nav a:focus-visible, .carousel:focus-visible {
+.btn:focus-visible, .nav a:focus-visible {
   outline: 2px solid var(--white);
   outline-offset: 3px;
 }
@@ -466,52 +466,35 @@ p { text-wrap: pretty; }
   font-size: 13px;
 }
 
-/* Results carousel */
-.results-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  flex-wrap: wrap;
+/* Production marquee: a continuous, automatic side-to-side strip */
+.section-production { padding-bottom: 0; }
+
+.marquee {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding: clamp(40px, 6vh, 64px) 0 clamp(90px, 13vh, 150px);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
 }
 
-.carousel-controls { display: flex; gap: 8px; }
-
-.ctrl {
-  width: 44px;
-  height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--white);
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
-}
-
-.ctrl:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
-.ctrl:disabled { opacity: 0.3; cursor: default; }
-.ctrl svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-
-.carousel {
+.marquee-track {
   display: flex;
   gap: 16px;
-  margin-top: 40px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-  border-radius: 16px;
+  width: max-content;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
 }
 
-.carousel::-webkit-scrollbar { display: none; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(calc(-50% - 8px), 0, 0); }
+}
 
 .slide {
-  flex: 0 0 calc((100% - 32px) / 3);
-  scroll-snap-align: start;
+  flex: 0 0 auto;
+  width: clamp(240px, 24vw, 340px);
   border-radius: 16px;
   overflow: hidden;
   border: 1px solid var(--border);
@@ -532,23 +515,6 @@ p { text-wrap: pretty; }
   text-transform: uppercase;
   color: var(--white-faint);
 }
-
-.carousel-dots {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 24px;
-}
-
-.carousel-dots span {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.25);
-  transition: width 0.3s var(--ease), background 0.3s ease;
-}
-
-.carousel-dots span.is-active { width: 20px; background: var(--white); }
 
 /* Final CTA */
 .cta {
@@ -584,7 +550,7 @@ p { text-wrap: pretty; }
   text-align: center;
 }
 
-.footer img { height: 28px; width: auto; opacity: 0.8; }
+.footer img { height: 32px; width: auto; opacity: 0.7; }
 .footer-meta { font-size: 13px; color: var(--white-faint); }
 .footer-meta a { color: var(--white-soft); }
 .footer-meta a:hover { color: var(--white); }
@@ -605,15 +571,13 @@ p { text-wrap: pretty; }
   .split { grid-template-columns: 1fr; }
   .facts, .systems { grid-template-columns: 1fr; }
   .steps { grid-template-columns: 1fr 1fr; }
-  .slide { flex-basis: calc((100% - 16px) / 2); }
 }
 
 @media (max-width: 640px) {
   .nav-links { display: none; }
   .nav { padding-left: 16px; }
-  .nav-logo img { height: 22px; }
+  .nav-logo img { height: 26px; }
   .steps { grid-template-columns: 1fr; }
-  .slide { flex-basis: 82%; }
   .btn-row .btn { flex: 1 1 100%; }
   .hero-points { flex-direction: column; align-items: center; }
 }
@@ -622,7 +586,8 @@ p { text-wrap: pretty; }
   html { scroll-behavior: auto; }
   .svc-bg::before, .grain { animation: none; }
   .js .reveal { opacity: 1; transform: none; filter: none; transition: none; }
-  .carousel { scroll-behavior: auto; }
+  .marquee-track { animation: none; }
+  .marquee { overflow-x: auto; }
 }
 
 @media (max-width: 640px) {
