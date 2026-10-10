@@ -324,36 +324,21 @@ p { text-wrap: pretty; }
 .split {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
-  gap: clamp(32px, 6vw, 96px);
-  align-items: start;
+  gap: clamp(24px, 6vw, 96px);
+  align-items: end;
 }
 
-.prose p {
-  font-size: 17px;
-  line-height: 1.7;
-  color: var(--white-soft);
-  margin-bottom: 18px;
-}
-
-.prose .lede { color: var(--white); font-size: 19px; line-height: 1.6; }
+.lede { color: var(--white-soft); font-size: clamp(17px, 1.5vw, 20px); line-height: 1.6; }
 
 .facts {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-top: clamp(48px, 7vh, 80px);
+  margin-top: clamp(36px, 5vh, 56px);
 }
 
-.fact { padding: 26px 24px 28px; }
-.fact p { font-size: 15px; line-height: 1.6; color: var(--white-soft); }
-
-.fact-num {
-  display: block;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--white-faint);
-  margin-bottom: 26px;
-}
+.fact { padding: 22px 22px 24px; }
+.fact dd { font-size: 15px; line-height: 1.6; color: var(--white-soft); }
 
 /* Systems */
 .systems {
@@ -366,7 +351,7 @@ p { text-wrap: pretty; }
 .system {
   display: flex;
   flex-direction: column;
-  padding: 28px 26px 30px;
+  padding: 24px 24px 26px;
   transition: transform 0.35s var(--ease), border-color 0.35s ease, background 0.35s ease;
 }
 
@@ -376,27 +361,9 @@ p { text-wrap: pretty; }
   background: rgba(255, 255, 255, 0.045);
 }
 
-.system-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 18px;
-  margin-bottom: 22px;
-  border-bottom: 1px solid var(--line);
-}
 
-.system-num { font-family: var(--mono); font-size: 12px; color: var(--white-faint); }
+.system-num { font-family: var(--mono); font-size: 12px; color: var(--white-faint); margin-bottom: 28px; }
 
-.system-tag {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--white-faint);
-  padding: 4px 9px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-}
 
 .system-title {
   font-weight: 500;
@@ -407,30 +374,8 @@ p { text-wrap: pretty; }
 
 .system p { font-size: 15.5px; line-height: 1.65; color: var(--white-soft); }
 
-.ticks {
-  list-style: none;
-  margin-top: auto;
-  padding-top: 24px;
-  display: grid;
-  gap: 10px;
-}
 
-.ticks li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 14.5px;
-  color: var(--white);
-}
 
-.ticks li::before {
-  content: '';
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
-  flex-shrink: 0;
-}
 
 /* Steps */
 .steps {
