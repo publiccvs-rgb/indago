@@ -43,3 +43,7 @@ BASEHUB_TOKEN="<get-it-from-your-basehub-repo>"
 ```bash
 pnpm dev
 ```
+
+## Deployment
+
+Pushes to this repo deploy to Vercel (`indago-marketing`): `main` goes to production, other branches get preview deployments.
