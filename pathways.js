@@ -424,7 +424,7 @@
         ].map(([a, b, c]) => `<div class="pw-compare-row"><span>${a}</span><span>${b}</span><span>${c}</span></div>`).join('')}
       </div>
 
-      <p class="pw-disclaimer">Illustration only. Captive figures follow American Income Life (a Globe Life company) and brokerage figures assume a 70% contract. Actual commission levels, advances, bonuses and chargebacks vary by contract and agent. Renewals and override income are not included.</p>
+      <p class="pw-disclaimer">Illustration only. Captive figures follow American Income Life (a Globe Life company) and brokerage figures assume a 70% contract. Actual commission levels, advances, bonuses and chargebacks vary by contract and agent. Renewals and override income are not included. American Income Life and Globe Life are named only as an example of a captive company; this site is not affiliated with or endorsed by them.</p>
 
       <div class="pw-actions pw-actions-end">
         <button type="button" class="pw-back" data-switch="${other}">Walk through the ${PATHS[other].name.toLowerCase()} path</button>

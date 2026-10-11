@@ -1212,3 +1212,96 @@ html.pw-open { overflow: hidden; }
 @media (max-width: 640px) {
   .pw-offer { grid-template-columns: 1fr; }
 }
+
+/* 404 */
+.lost { position: relative; z-index: 2; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px; text-align: center; }
+.lost .btn { margin-top: 28px; }
+
+/* ---------- Motion ---------- */
+
+/* Hero headline words rise in */
+.js .hero-title.is-split .w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(0.35em);
+  filter: blur(8px);
+  animation: wordRise 0.9s var(--ease) forwards;
+  animation-delay: calc(120ms + var(--i) * 70ms);
+}
+
+@keyframes wordRise { to { opacity: 1; transform: none; filter: none; } }
+
+/* Day-one list items slide in after the headline */
+.js .hero-index li {
+  opacity: 0;
+  transform: translateX(14px);
+  animation: slideIn 0.7s var(--ease) forwards;
+}
+.js .hero-index li:nth-child(1) { animation-delay: 0.75s; }
+.js .hero-index li:nth-child(2) { animation-delay: 0.87s; }
+.js .hero-index li:nth-child(3) { animation-delay: 0.99s; }
+
+@keyframes slideIn { to { opacity: 1; transform: none; } }
+
+/* Eyebrow lines draw in when their label appears */
+.js .eyebrow.reveal .eyebrow-line { transform: scaleX(0); transform-origin: right; transition: transform 0.9s var(--ease) 0.25s; }
+.js .eyebrow.reveal .eyebrow-line:first-child { transform-origin: right; }
+.js .eyebrow.reveal .eyebrow-line:last-child:not(:first-child) { transform-origin: left; }
+.js .eyebrow.reveal.is-visible .eyebrow-line { transform: none; }
+
+/* Light sweep across primary buttons on hover */
+.btn-primary { position: relative; overflow: hidden; isolation: isolate; }
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(110deg, transparent 30%, rgba(0, 0, 0, 0.09) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.7s var(--ease);
+}
+.btn-primary:hover::after { transform: translateX(120%); }
+
+/* Cursor spotlight on cards */
+.spot { position: relative; }
+.spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.09), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.spot:hover::after { opacity: 1; }
+.funnel-result.spot::after { background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 0, 0, 0.07), transparent 60%); }
+
+/* Cursor glow (desktop) */
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 560px;
+  height: 560px;
+  margin: -280px 0 0 -280px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 40%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  will-change: transform;
+}
+.cursor-glow.is-on { opacity: 1; }
+
+/* Gentle breathing on the highlighted result */
+.funnel-result.is-visible .funnel-num { animation: glowPulse 3.2s ease-in-out 1.6s infinite; }
+@keyframes glowPulse { 0%, 100% { text-shadow: 0 0 0 rgba(0, 0, 0, 0); } 50% { text-shadow: 0 0 18px rgba(0, 0, 0, 0.18); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .hero-title.is-split .w, .js .hero-index li { animation: none; opacity: 1; transform: none; filter: none; }
+  .js .eyebrow.reveal .eyebrow-line { transform: none; transition: none; }
+  .btn-primary::after, .cursor-glow { display: none; }
+  .funnel-result .funnel-num { animation: none; }
+}

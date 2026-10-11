@@ -130,3 +130,98 @@ if (dock && heroEl && joinEl) {
   new IntersectionObserver(([en]) => { pastHero = !en.isIntersecting; sync(); }).observe(heroEl);
   new IntersectionObserver(([en]) => { atJoin = en.isIntersecting; sync(); }).observe(joinEl);
 }
+
+/* ---------- Motion ---------- */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+/* Hero headline: split into words that rise in one after another. */
+document.querySelectorAll('[data-words]').forEach((el) => {
+  let i = 0;
+  const wrap = (node) => {
+    [...node.childNodes].forEach((child) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          const w = document.createElement('span');
+          w.className = 'w';
+          w.style.setProperty('--i', i++);
+          w.textContent = part;
+          frag.appendChild(w);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        wrap(child);
+      }
+    });
+  };
+  wrap(el);
+  el.classList.add('is-split');
+});
+
+/* Count numbers up from zero when they scroll into view, keeping any
+   prefix/suffix ("$", "%", "K", "~", " hrs") and thousands separators. */
+const countEls = document.querySelectorAll('[data-count]');
+const runCount = (el) => {
+  const text = el.textContent.trim();
+  const m = text.match(/^([^0-9]*)([\d,]+(?:\.\d+)?)(.*)$/);
+  if (!m) return;
+  const [, pre, num, post] = m;
+  const target = parseFloat(num.replace(/,/g, ''));
+  const decimals = (num.split('.')[1] || '').length;
+  const useComma = num.includes(',');
+  const dur = 1400;
+  const start = performance.now();
+  const fmt = (v) => {
+    const n = v.toFixed(decimals);
+    return useComma ? Number(n).toLocaleString('en-US', { minimumFractionDigits: decimals }) : n;
+  };
+  const tick = (t) => {
+    const p = Math.min((t - start) / dur, 1);
+    const eased = 1 - Math.pow(2, -10 * p);
+    el.textContent = pre + fmt(target * (p === 1 ? 1 : eased)) + post;
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  el.textContent = pre + fmt(0) + post;
+  requestAnimationFrame(tick);
+};
+if (!reduceMotion) {
+  const countObserver = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      if (en.isIntersecting) { runCount(en.target); countObserver.unobserve(en.target); }
+    });
+  }, { threshold: 0.6 });
+  countEls.forEach((el) => countObserver.observe(el));
+}
+
+/* Spotlight that follows the cursor across cards. */
+if (finePointer) {
+  document.querySelectorAll('.spot').forEach((el) => {
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      el.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
+  });
+}
+
+/* Soft glow that trails the cursor (desktop only). */
+const glow = document.querySelector('.cursor-glow');
+if (glow && finePointer && !reduceMotion) {
+  let x = innerWidth / 2, y = innerHeight / 3, gx = x, gy = y, running = false;
+  const loop = () => {
+    gx += (x - gx) * 0.12;
+    gy += (y - gy) * 0.12;
+    glow.style.transform = `translate3d(${gx}px, ${gy}px, 0)`;
+    if (Math.abs(x - gx) > 0.5 || Math.abs(y - gy) > 0.5) requestAnimationFrame(loop);
+    else running = false;
+  };
+  window.addEventListener('pointermove', (e) => {
+    x = e.clientX; y = e.clientY;
+    glow.classList.add('is-on');
+    if (!running) { running = true; requestAnimationFrame(loop); }
+  }, { passive: true });
+  document.addEventListener('pointerleave', () => glow.classList.remove('is-on'));
+}
