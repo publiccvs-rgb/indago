@@ -255,7 +255,8 @@
   const trailEl = dialog.querySelector('[data-pw-trail]');
   const stageEl = dialog.querySelector('[data-pw-stage]');
   const pathLabel = dialog.querySelector('[data-pw-path]');
-  let state = { path: null, step: 0, reached: 0, view: 'choose' };
+  let state = { path: null, step: 0, reached: 0, view: 'choose', calcDone: false };
+  let lastCalc = { ...DEFAULTS };
   let lastFocus = null;
 
   /* ---------- Open / close ---------- */
@@ -298,6 +299,7 @@
     stageEl.classList.remove('is-in');
     if (state.view === 'choose') stageEl.innerHTML = chooseView();
     else if (state.view === 'calc') stageEl.innerHTML = calcView();
+    else if (state.view === 'next') stageEl.innerHTML = nextView();
     else stageEl.innerHTML = stepView();
     void stageEl.offsetWidth;
     stageEl.classList.add('is-in');
@@ -312,7 +314,8 @@
       PATHS[state.path].steps.forEach((s, i) => items.push({
         label: s.title, view: 'step', index: i, done: i < state.reached, locked: i > state.reached,
       }));
-      items.push({ label: 'Compare both paths', view: 'calc', locked: state.reached < PATHS[state.path].steps.length, calc: true });
+      items.push({ label: 'Compare both paths', view: 'calc', done: state.calcDone, locked: state.reached < PATHS[state.path].steps.length, calc: true });
+      items.push({ label: 'Your next step', view: 'next', locked: !state.calcDone, calc: true });
     }
     trailEl.innerHTML = items.map((it) => {
       const current = it.view === state.view && (it.view !== 'step' || it.index === state.step);
@@ -425,7 +428,40 @@
 
       <div class="pw-actions pw-actions-end">
         <button type="button" class="pw-back" data-switch="${other}">Walk through the ${PATHS[other].name.toLowerCase()} path</button>
-        <a class="btn btn-primary" href="https://ig.me/m/casimirdz" target="_blank" rel="noopener" data-ig>DM @casimirdz to talk it through</a>
+        <button type="button" class="btn btn-primary" data-go-next>Your next step <span aria-hidden="true">→</span></button>
+      </div>`;
+  }
+
+  function nextView() {
+    const pathName = PATHS[state.path].name;
+    const alp = usd(lastCalc.alp);
+    const msg = `Hey! I went through the Pathways guide (${pathName}) and ran the numbers at ${alp} a month in ALP. I want to talk about getting started.`;
+    return `
+      <p class="pw-kicker">Your next step</p>
+      <h2 class="pw-title">Whichever path you pick, <span class="serif">start with the systems.</span></h2>
+      <p class="pw-lede">You explored the <strong>${pathName.toLowerCase()}</strong> path and ran the numbers at <strong>${alp}</strong> a month. Most new agents never get there because they're buying leads and dialing by hand. Our agents start with:</p>
+      <div class="pw-offer">
+        <div><span>01</span><b>Free AI dialer</b><em>for your first month</em></div>
+        <div><span>02</span><b>Unlimited free leads</b><em>no lead bills, no warm market</em></div>
+        <div><span>03</span><b>Retention software</b><em>keeps policies on the books</em></div>
+        <div><span>04</span><b>Mentorship</b><em>real producers, real coaching</em></div>
+      </div>
+      <h3 class="pw-subtitle">What happens when you message</h3>
+      <ol class="pw-next-steps">
+        <li><b>You DM @casimirdz</b><span>Paste the message below, or say hi in your own words.</span></li>
+        <li><b>A quick call</b><span>We go over the role, the pay, and whether it fits your goals.</span></li>
+        <li><b>Licensed and plugged in</b><span>We guide your licensing, then set you up with the dialer and leads.</span></li>
+      </ol>
+      <div class="pw-message">
+        <p class="pw-message-label">Your starter message</p>
+        <p class="pw-message-text">${msg}</p>
+      </div>
+      <div class="pw-actions pw-actions-end">
+        <button type="button" class="pw-back" data-close>Back to the site</button>
+        <a class="btn btn-primary btn-lg" href="https://ig.me/m/casimirdz" target="_blank" rel="noopener" data-ig data-ig-msg="${msg.replace(/"/g, '&quot;')}">
+          <svg class="ig" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" class="fill"/></svg>
+          Copy message and DM @casimirdz
+        </a>
       </div>`;
   }
 
@@ -433,7 +469,7 @@
 
   function bindStage() {
     stageEl.querySelectorAll('[data-choose]').forEach((b) => b.addEventListener('click', () => {
-      state = { path: b.dataset.choose, step: 0, reached: 0, view: 'step' };
+      state = { path: b.dataset.choose, step: 0, reached: 0, view: 'step', calcDone: false };
       render();
     }));
     const next = stageEl.querySelector('[data-next]');
@@ -452,18 +488,24 @@
     if (back) back.addEventListener('click', () => { state.step -= 1; render(); });
     const sw = stageEl.querySelector('[data-switch]');
     if (sw) sw.addEventListener('click', () => {
-      state = { path: sw.dataset.switch, step: 0, reached: 0, view: 'step' };
+      state = { path: sw.dataset.switch, step: 0, reached: 0, view: 'step', calcDone: false };
       render();
     });
+    const goNext = stageEl.querySelector('[data-go-next]');
+    if (goNext) goNext.addEventListener('click', () => { state.calcDone = true; state.view = 'next'; render(); });
+    const closeBtn = stageEl.querySelector('[data-close]');
+    if (closeBtn) closeBtn.addEventListener('click', close);
     if (state.view === 'calc') bindCalc();
     if (window.bindInstagramLinks) window.bindInstagramLinks(stageEl);
   }
 
   function bindCalc() {
     const inputs = stageEl.querySelectorAll('[data-in]');
-    const vals = { ...DEFAULTS };
+    const vals = { ...lastCalc };
+    inputs.forEach((i) => { i.value = vals[i.dataset.in]; });
     const update = () => {
       inputs.forEach((i) => { vals[i.dataset.in] = Number(i.value); });
+      lastCalc = { ...vals };
       const r = compare(vals);
       const fmtOut = { alp: usd(vals.alp), chargeback: vals.chargeback + '%' };
       stageEl.querySelectorAll('[data-out]').forEach((o) => {

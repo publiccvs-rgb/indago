@@ -90,3 +90,43 @@ function bindInstagramLinks(root) {
 }
 window.bindInstagramLinks = bindInstagramLinks;
 bindInstagramLinks(document);
+
+/* Starter DM messages: Instagram links can't pre-fill a message, so tapping a
+   button with data-ig-msg copies a context-specific opener to the clipboard
+   and tells the visitor they can paste it. Runs in the capture phase so it
+   happens before the app redirect above. */
+const toast = document.querySelector('.toast');
+let toastTimer;
+function showToast(text) {
+  if (!toast) return;
+  toast.textContent = text;
+  toast.classList.add('is-on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('is-on'), 3200);
+}
+
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('a[data-ig-msg]');
+  if (!link || !navigator.clipboard) return;
+  navigator.clipboard.writeText(link.dataset.igMsg)
+    .then(() => showToast('Starter message copied. Paste it in the DM.'))
+    .catch(() => {});
+}, true);
+
+/* Sticky join bar on phones: appears once the hero is out of view and hides
+   again when the final call to action is on screen. */
+const dock = document.querySelector('.dock');
+const heroEl = document.querySelector('.hero');
+const joinEl = document.getElementById('join');
+if (dock && heroEl && joinEl) {
+  let pastHero = false;
+  let atJoin = false;
+  const sync = () => {
+    const on = pastHero && !atJoin;
+    dock.classList.toggle('is-on', on);
+    dock.setAttribute('aria-hidden', String(!on));
+    dock.querySelector('a').tabIndex = on ? 0 : -1;
+  };
+  new IntersectionObserver(([en]) => { pastHero = !en.isIntersecting; sync(); }).observe(heroEl);
+  new IntersectionObserver(([en]) => { atJoin = en.isIntersecting; sync(); }).observe(joinEl);
+}
