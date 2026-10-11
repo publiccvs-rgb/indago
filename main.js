@@ -67,8 +67,10 @@ const inInstagramApp = /Instagram/i.test(ua);
 const isAndroid = /Android/i.test(ua);
 const isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-if (!inInstagramApp && (isAndroid || isIOS)) {
-  document.querySelectorAll('a[data-ig]').forEach((link) => {
+function bindInstagramLinks(root) {
+  if (inInstagramApp || !(isAndroid || isIOS)) return;
+  root.querySelectorAll('a[data-ig]:not([data-ig-bound])').forEach((link) => {
+    link.setAttribute('data-ig-bound', '');
     link.removeAttribute('target');
     if (isAndroid) {
       link.href = IG_ANDROID_INTENT;
@@ -86,3 +88,5 @@ if (!inInstagramApp && (isAndroid || isIOS)) {
     });
   });
 }
+window.bindInstagramLinks = bindInstagramLinks;
+bindInstagramLinks(document);

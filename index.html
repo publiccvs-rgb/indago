@@ -24,8 +24,32 @@
   <a class="nav-logo" href="#top" aria-label="Back to top">
     <img src="brand/casimir-logo-white.svg" alt="" />
   </a>
-  <a class="btn btn-sm btn-primary" href="https://ig.me/m/casimirdz" target="_blank" rel="noopener" data-ig>Join</a>
+  <div class="nav-actions">
+    <button type="button" class="nav-pathways" data-pathways-open aria-haspopup="dialog" aria-controls="pathways">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="18" r="2"/><circle cx="19" cy="6" r="2"/><path d="M7 18h4a3 3 0 0 0 3-3V9a3 3 0 0 1 3-3"/></svg>
+      <span class="nav-pathways-long">Pathways to Financial Freedom</span><span class="nav-pathways-short">Pathways</span>
+    </button>
+    <a class="btn btn-sm btn-primary" href="https://ig.me/m/casimirdz" target="_blank" rel="noopener" data-ig>Join</a>
+  </div>
 </header>
+
+<!-- Pathways to Financial Freedom: full-screen guided explainer (content built by pathways.js) -->
+<div class="pw" id="pathways" role="dialog" aria-modal="true" aria-labelledby="pw-heading" hidden>
+  <div class="pw-backdrop" aria-hidden="true"></div>
+  <div class="pw-shell">
+    <header class="pw-top">
+      <div>
+        <p class="pw-top-label" id="pw-heading">Pathways to Financial Freedom</p>
+        <p class="pw-top-path" data-pw-path></p>
+      </div>
+      <button type="button" class="pw-close" aria-label="Close pathways">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+    <nav class="pw-trail" aria-label="Your trail"><ol data-pw-trail></ol></nav>
+    <section class="pw-stage" data-pw-stage aria-live="polite"></section>
+  </div>
+</div>
 
 <main id="top">
 
@@ -240,5 +264,6 @@
 </footer>
 
 <script src="main.js" defer></script>
+<script src="pathways.js" defer></script>
 </body>
 </html>
